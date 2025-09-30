@@ -7,6 +7,7 @@ import { Link, useNavigate } from "react-router-dom";
 export default function ForgotPassword() {
   const emailRef = useRef();
   const [error, setError] = useState("");
+  const [message, setMessage] = useState(""); // ✅ added setMessage
   const [loading, setLoading] = useState(false);
   const navigate = useNavigate();
 
@@ -14,10 +15,16 @@ export default function ForgotPassword() {
     e.preventDefault();
     try {
       setError("");
+      setMessage("");
       setLoading(true);
+
       await sendPasswordResetEmail(auth, emailRef.current.value);
-      alert("Check your inbox for password reset email");
-      navigate("/login");
+      setMessage("Check your inbox for password reset email"); // ✅ update message
+
+      // optional: redirect after a delay
+      setTimeout(() => {
+        navigate("/login");
+      }, 2000);
     } catch (err) {
       console.error(err);
       setError(err.message || "Failed to reset password");
@@ -31,6 +38,7 @@ export default function ForgotPassword() {
         <Card.Body>
           <h2 className="text-center mb-4">Password Reset</h2>
           {error && <Alert variant="danger">{error}</Alert>}
+          {message && <Alert variant="success">{message}</Alert>} {/* ✅ show message */}
           <Form onSubmit={handleSubmit}>
             <Form.Group id="email" className="mb-3">
               <Form.Label>Email</Form.Label>

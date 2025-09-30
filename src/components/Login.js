@@ -18,7 +18,7 @@ export default function Login() {
       setError("");
       setLoading(true);
       await login(emailRef.current.value, passwordRef.current.value);
-      navigate("/dashboard"); // redirect after login
+      navigate("/"); // redirect after login
     } catch (err) {
       setError(err.message || "Failed to log in");
     }

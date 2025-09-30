@@ -1,13 +1,14 @@
 import React, { useRef, useState } from "react";
 import { Form, Button, Card, Alert } from "react-bootstrap";
 import { useAuth } from "../context/AuthContext";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, Link } from "react-router-dom";
 
 export default function UpdateProfile() {
   const emailRef = useRef();
   const passwordRef = useRef();
   const passwordConfirmRef = useRef();
-  const { currentUser, updateUserEmail, updateUserPassword } = useAuth();
+  const { currentUser, updateUserEmail, updateUserPassword, reauthenticate } =
+    useAuth(); // ✅ include reauthenticate
   const [error, setError] = useState("");
   const [message, setMessage] = useState("");
   const [loading, setLoading] = useState(false);
@@ -25,6 +26,7 @@ export default function UpdateProfile() {
 
     const promises = [];
 
+    // Add updates only if values have changed
     if (emailRef.current.value !== currentUser.email) {
       promises.push(updateUserEmail(emailRef.current.value));
     }
@@ -33,9 +35,15 @@ export default function UpdateProfile() {
     }
 
     try {
+      // ✅ Require reauthentication if updating password or email
+      if (passwordRef.current.value) {
+        await reauthenticate(passwordRef.current.value);
+      }
+
       await Promise.all(promises);
+
       setMessage("Profile updated successfully!");
-      navigate("/dashboard");
+      navigate("/dashboard"); // ✅ redirect to dashboard
     } catch (err) {
       setError(err.message || "Failed to update profile");
     }
@@ -87,6 +95,11 @@ export default function UpdateProfile() {
           </Form>
         </Card.Body>
       </Card>
+      <div className="w-100 text-center mt-2">
+        <Link to="/" className="btn btn-secondary w-100 mt-2">
+          Cancel
+        </Link>
+      </div>
     </>
   );
 }

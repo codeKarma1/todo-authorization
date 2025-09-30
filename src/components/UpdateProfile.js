@@ -43,7 +43,7 @@ export default function UpdateProfile() {
       await Promise.all(promises);
 
       setMessage("Profile updated successfully!");
-      navigate("/dashboard"); // ✅ redirect to dashboard
+      navigate("/"); // ✅ redirect to dashboard
     } catch (err) {
       setError(err.message || "Failed to update profile");
     }
